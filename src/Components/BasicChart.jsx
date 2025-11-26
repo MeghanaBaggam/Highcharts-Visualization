@@ -66,7 +66,7 @@ const BasicChart = () => {
       <select value={chartType} onChange={(e)=>setChartType(e.target.value)}>
         <option value="line">Line</option>
          <option value="column">Column</option>
-          <option value="Bar">Bar</option>
+          <option value="bar">Bar</option>
       </select>
     
        <button
