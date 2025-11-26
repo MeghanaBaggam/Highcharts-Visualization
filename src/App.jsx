@@ -1,10 +1,10 @@
 import React from "react";
-import BasicChart from "./BasicChart";
+import BasicChart from "./Components/BasicChart";
 
 const App = () => {
   return (
     <div style={{ width: "600px", margin: "40px auto" }}>
-      <h1>Highcharts Demo</h1>
+      <center><h1>Highcharts</h1></center>
       <BasicChart />
     </div>
   );
