@@ -32,14 +32,14 @@ const BasicChart = () => {
   };
 
   const exportPDF=async()=>{
-    const pdf=new jsPDF("p","mm","a4");
+    const pdf=new jsPDF("l","mm","a4");
     const chartCanvas=await html2canvas(chartRef.current);
     const chartImg = chartCanvas.toDataURL("image/png"); 
-     pdf.addImage(chartImg, "PNG", 10, 10, 190, 90);
+     pdf.addImage(chartImg, "PNG",10, 20, 130, 90);
 
      const tableCanvas = await html2canvas(tableRef.current);
     const tableImg = tableCanvas.toDataURL("image/png");
-    pdf.addImage(tableImg, "PNG", 10, 110, 190, 0);
+    pdf.addImage(tableImg, "PNG", 150, 20, 130, 90);
 
     pdf.save("chart_with_table.pdf");
   }
@@ -67,6 +67,8 @@ const BasicChart = () => {
         <option value="line">Line</option>
          <option value="column">Column</option>
           <option value="bar">Bar</option>
+           <option value="area">Area</option>
+            <option value="scatter">Scatter</option>
       </select>
     
        <button
