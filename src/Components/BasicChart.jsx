@@ -41,7 +41,7 @@ const BasicChart = () => {
       enabled: true,
       buttons: {
         contextButton: {
-          menuItems: ["downloadPDF", "downloadCSV"],
+          menuItems: [""],
         },
       },
     },
