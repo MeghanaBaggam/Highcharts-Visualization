@@ -1,28 +1,25 @@
-import React, { useState } from "react";
+import React, { useState,useRef } from "react";
 
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import HighchartsExporting from "highcharts/modules/exporting";
-import HighchartsExportData from "highcharts/modules/export-data";
-import HighchartsOfflineExporting from "highcharts/modules/offline-exporting";
 import Papa from "papaparse";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 if (typeof HighchartsExporting === "function") {
   HighchartsExporting(Highcharts);
 }
-if (typeof HighchartsExportData === "function") {
-  HighchartsExportData(Highcharts);
-}
-if (typeof HighchartsOfflineExporting === "function") {
-  HighchartsOfflineExporting(Highcharts);
-}
 
 const BasicChart = () => {
   const [data, setData] = useState([]);
+   const chartRef = useRef(null);
+  const tableRef = useRef(null);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
     Papa.parse(file, {
      header: true,
       complete: function (results) {
@@ -31,20 +28,27 @@ const BasicChart = () => {
       },
     });
   };
+
+  const exportPDF=async()=>{
+    const pdf=new jsPDF("p","mm","a4");
+    const chartCanvas=await html2canvas(chartRef.current);
+    const chartImg = chartCanvas.toDataURL("image/png"); 
+     pdf.addImage(chartImg, "PNG", 10, 10, 190, 90);
+
+     const tableCanvas = await html2canvas(tableRef.current);
+    const tableImg = tableCanvas.toDataURL("image/png");
+    pdf.addImage(tableImg, "PNG", 10, 110, 190, 0);
+
+    pdf.save("chart_with_table.pdf");
+  }
+
   const options = {
     title: { text: "Mock Sales Data" },
     xAxis: { categories: data.map((d) => d.month) },
     yAxis: { title: { text: "Sales Amount" } },
     series: [{ name: "Sales", data: data.map((d) => Number(d.sales)) }],
     accessibility: { enabled: false },
-    exporting: {
-      enabled: true,
-      buttons: {
-        contextButton: {
-          menuItems: [""],
-        },
-      },
-    },
+    exporting: { enabled: false },
     credits: { enabled: false },
   };
 
@@ -56,13 +60,19 @@ const BasicChart = () => {
         onChange={handleFileUpload}
         style={{ marginBottom: 20 }}
       />
+       <button
+        onClick={exportPDF}
+        className="export"
+      >
+        Export
+      </button>
 
       <div className="chart-table-container">
-        <div className="chart-section">
+        <div className="chart-section" ref={chartRef}>
           <HighchartsReact highcharts={Highcharts} options={options} />
         </div>
 
-        <div className="table-section">
+        <div className="table-section" ref={tableRef}>
           <div className="table-title">Sales Table</div>
           <table className="sales-table">
             <thead>
