@@ -1,6 +1,6 @@
 import React, { useState,useRef } from "react";
 
-import Highcharts from "highcharts";
+import Highcharts, { chart } from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import HighchartsExporting from "highcharts/modules/exporting";
 import Papa from "papaparse";
@@ -13,7 +13,9 @@ if (typeof HighchartsExporting === "function") {
 
 const BasicChart = () => {
   const [data, setData] = useState([]);
-   const chartRef = useRef(null);
+  const [chartType,setChartType]=useState("line");
+
+  const chartRef = useRef(null);
   const tableRef = useRef(null);
 
   const handleFileUpload = (e) => {
@@ -43,6 +45,7 @@ const BasicChart = () => {
   }
 
   const options = {
+    chart:{type:chartType},
     title: { text: "Mock Sales Data" },
     xAxis: { categories: data.map((d) => d.month) },
     yAxis: { title: { text: "Sales Amount" } },
@@ -60,6 +63,12 @@ const BasicChart = () => {
         onChange={handleFileUpload}
         style={{ marginBottom: 20 }}
       />
+      <select value={chartType} onChange={(e)=>setChartType(e.target.value)}>
+        <option value="line">Line</option>
+         <option value="column">Column</option>
+          <option value="Bar">Bar</option>
+      </select>
+    
        <button
         onClick={exportPDF}
         className="export"
