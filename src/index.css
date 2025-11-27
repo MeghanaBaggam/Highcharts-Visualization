@@ -1,43 +1,81 @@
-.chart-table-container {
-  display: flex;
-  gap: 30px;
-  align-items: flex-start;
-  width: 100%;
+.report-container {
+  width: 95%;
+  margin: auto;
+  padding: 20px;
+  font-family: "Inter", sans-serif;
+  background: white;
 }
 
-.chart-section {
-  width: 60%;
+.report-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 25px;
+  text-align: center;
 }
 
-.table-section {
-  width: 40%;
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
 }
 
-.sales-table {
-  width: 100%;
-  border-collapse: collapse;
+.kpi-card {
+  background: #eef6f2;
+  padding: 20px;
+  border-radius: 14px;
   text-align: left;
+}
+
+.kpi-label {
   font-size: 14px;
+  color: #6b6b6b;
 }
 
-.sales-table thead tr {
-  background-color: #f2f2f2;
+.kpi-value {
+  font-size: 26px;
+  font-weight: bold;
+  margin-top: 8px;
 }
 
-.sales-table th,
-.sales-table td {
-  padding: 8px;
-  border: 1px solid #ddd;
+.kpi-sub {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #444;
 }
 
-.sales-table tbody tr:hover {
-  background-color: #f9f9f9;
-  transition: 0.2s;
+.trend-section {
+  margin-top: 30px;
+  background: #f9fafb;
+  padding: 20px;
+  border-radius: 14px;
 }
 
-.table-title {
+.middle-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.6fr;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.donuts,
+.heatmap,
+.mini-kpis {
+  background: #f9fafb;
+  padding: 20px;
+  border-radius: 14px;
+}
+
+.mini-card {
+  background: #d8f3e2;
+  padding: 15px;
+  border-radius: 12px;
   margin-bottom: 10px;
-  font-size: 18px;
-  font-weight: 600;
+  font-weight: bold;
 }
 
+.summary-table-section {
+  margin-top: 30px;
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+}
