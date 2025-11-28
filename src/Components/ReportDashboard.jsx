@@ -9,8 +9,7 @@ const ReportDashboard = ({
   return (
     <div className="report-container">
       <div className="report-title">CSV Report</div>
-
-      {kpis.length > 0 && (
+      {kpis.length > 0 ? (
         <div className="kpi-row">
           {kpis.map((kpi, i) => (
             <div className="kpi-card" key={i}>
@@ -20,13 +19,17 @@ const ReportDashboard = ({
             </div>
           ))}
         </div>
+      ) : (
+        null
       )}
+
       <div className="middle-row">
+
         <div className="donuts">
           {donuts ? (
             donuts
           ) : (
-            <div className="placeholder">Upload CSV for Donuts</div>
+          null
           )}
         </div>
 
@@ -34,11 +37,17 @@ const ReportDashboard = ({
           {dotMatrix ? (
             dotMatrix
           ) : (
-            <div className="placeholder">Dot Matrix Will Appear Here</div>
+           null
           )}
         </div>
+
       </div>
-      {table && <div className="summary-table-section">{table}</div>}
+
+      {table ? (
+        <div className="summary-table-section">{table}</div>
+      ) : (
+        null
+      )}
     </div>
   );
 };
