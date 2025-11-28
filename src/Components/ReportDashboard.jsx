@@ -19,35 +19,15 @@ const ReportDashboard = ({
             </div>
           ))}
         </div>
-      ) : (
-        null
-      )}
+      ) : null}
 
       <div className="middle-row">
+        <div className="donuts">{donuts ? donuts : null}</div>
 
-        <div className="donuts">
-          {donuts ? (
-            donuts
-          ) : (
-          null
-          )}
-        </div>
-
-        <div className="heatmap">
-          {dotMatrix ? (
-            dotMatrix
-          ) : (
-           null
-          )}
-        </div>
-
+        <div className="heatmap">{dotMatrix ? dotMatrix : null}</div>
       </div>
 
-      {table ? (
-        <div className="summary-table-section">{table}</div>
-      ) : (
-        null
-      )}
+      {table ? <div className="summary-table-section">{table}</div> : null}
     </div>
   );
 };

@@ -1,23 +1,21 @@
 import React, { useState, useRef } from "react";
+import Papa from "papaparse";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import HighchartsExporting from "highcharts/modules/exporting";
-import Papa from "papaparse";
-import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-
-if (typeof HighchartsExporting === "function") {
-  HighchartsExporting(Highcharts);
-}
+import jsPDF from "jspdf";
 
 const BasicChart = () => {
-  const [rows, setRows] = useState([]);
-  const [headers, setHeaders] = useState([]);
-  const [numericCols, setNumericCols] = useState([]);
-  const [xCol, setXCol] = useState("");
-  const [loadingPDF, setLoadingPDF] = useState(false);
+  const [state, setState] = useState({
+    rows: [],
+    headers: [],
+    numericCols: [],
+    xCol: "",
+    loadingPDF: false,
+  });
 
   const reportRef = useRef(null);
+
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -31,21 +29,27 @@ const BasicChart = () => {
         const cols = results.meta.fields || [];
 
         const cleanData = raw.filter((row) =>
-          Object.values(row).some((v) => v !== "" && v !== null && v !== undefined)
+          Object.values(row).some(
+            (v) => v !== "" && v !== null && v !== undefined
+          )
         );
 
         const nums = cols.filter((col) =>
           cleanData.some((row) => !isNaN(Number(row[col])))
         );
 
-        setRows(cleanData);
-        setHeaders(cols);
-        setNumericCols(nums);
-
-        if (cols.length > 0) setXCol(cols[0]);
+        setState((prev) => ({
+          ...prev,
+          rows: cleanData,
+          headers: cols,
+          numericCols: nums,
+          xCol: cols.length > 0 ? cols[0] : "",
+        }));
       },
     });
   };
+
+  const { rows, headers, numericCols, xCol, loadingPDF } = state;
 
   const primaryMetric = numericCols[0] || null;
   const secondaryMetric = numericCols[1] || null;
@@ -56,7 +60,7 @@ const BasicChart = () => {
 
     const count = vals.length;
     const sum = vals.reduce((a, b) => a + b, 0);
-    const avg = sum / count;  
+    const avg = sum / count;
     const min = Math.min(...vals);
     const max = Math.max(...vals);
 
@@ -88,6 +92,7 @@ const BasicChart = () => {
   };
 
   const { cats: groupCats, vals: groupVals } = getGroupedByX();
+
   const kpis = [];
   if (rows.length > 0) {
     kpis.push({
@@ -206,21 +211,19 @@ const BasicChart = () => {
   const exportPDF = async () => {
     if (!reportRef.current) return;
 
-    setLoadingPDF(true);
+    setState((prev) => ({ ...prev, loadingPDF: true }));
 
-   const canvas = await html2canvas(reportRef.current, {
+    const canvas = await html2canvas(reportRef.current, {
       scale: 2,
       useCORS: true,
       backgroundColor: "#FFFFFF",
     });
 
     const imgData = canvas.toDataURL("image/png");
-
     const pdf = new jsPDF("l", "mm", "a4");
 
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-
     const imgHeight = (canvas.height * pageWidth) / canvas.width;
 
     let heightLeft = imgHeight;
@@ -238,7 +241,7 @@ const BasicChart = () => {
 
     pdf.save("csv_full_report.pdf");
 
-    setLoadingPDF(false);
+    setState((prev) => ({ ...prev, loadingPDF: false }));
   };
 
   return (
@@ -249,7 +252,12 @@ const BasicChart = () => {
 
       <div className="controls-row">
         {headers.length > 0 && (
-          <select value={xCol} onChange={(e) => setXCol(e.target.value)}>
+          <select
+            value={xCol}
+            onChange={(e) =>
+              setState((prev) => ({ ...prev, xCol: e.target.value }))
+            }
+          >
             {headers.map((h) => (
               <option key={h} value={h}>
                 X: {h}
@@ -258,13 +266,13 @@ const BasicChart = () => {
           </select>
         )}
 
-        <button onClick={exportPDF} ref={reportRef} className="export-btn">
+        <button onClick={exportPDF} className="export-btn">
           Export Report PDF
         </button>
       </div>
 
       <div className="report-container" ref={reportRef}>
-        <div className="report-title"> CSV Insight Report</div>
+        <div className="report-title">CSV Insight Report</div>
 
         <div className="kpi-row">
           {kpis.map((k, i) => (
@@ -281,30 +289,25 @@ const BasicChart = () => {
             <div style={{ fontSize: "18px", marginBottom: "12px" }}>
               Upload a CSV file to see the full report.
             </div>
-
-            <input
-              type="file"
-              accept=".csv"
-              onChange={handleFileUpload}
-              style={{
-                padding: "10px",
-                border: "1px solid #ccc",
-                borderRadius: "6px",
-                cursor: "pointer",
-              }}
-            />
+            <input type="file" accept=".csv" onChange={handleFileUpload} />
           </div>
         ) : (
           <>
             <div className="charts-row">
               <div className="chart-box">
                 {lineOptions && (
-                  <HighchartsReact highcharts={Highcharts} options={lineOptions} />
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    options={lineOptions}
+                  />
                 )}
               </div>
               <div className="chart-box">
                 {pieOptions && (
-                  <HighchartsReact highcharts={Highcharts} options={pieOptions} />
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    options={pieOptions}
+                  />
                 )}
               </div>
             </div>
@@ -312,12 +315,18 @@ const BasicChart = () => {
             <div className="charts-row">
               <div className="chart-box">
                 {columnOptions && (
-                  <HighchartsReact highcharts={Highcharts} options={columnOptions} />
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    options={columnOptions}
+                  />
                 )}
               </div>
               <div className="chart-box">
                 {barOptions && (
-                  <HighchartsReact highcharts={Highcharts} options={barOptions} />
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    options={barOptions}
+                  />
                 )}
               </div>
             </div>
@@ -325,12 +334,18 @@ const BasicChart = () => {
             <div className="charts-row">
               <div className="chart-box">
                 {areaOptions && (
-                  <HighchartsReact highcharts={Highcharts} options={areaOptions} />
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    options={areaOptions}
+                  />
                 )}
               </div>
               <div className="chart-box">
                 {scatterOptions && (
-                  <HighchartsReact highcharts={Highcharts} options={scatterOptions} />
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    options={scatterOptions}
+                  />
                 )}
               </div>
             </div>

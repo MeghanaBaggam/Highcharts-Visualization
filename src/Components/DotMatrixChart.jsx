@@ -16,7 +16,7 @@ const DotMatrixChart = ({ categories, values }) => {
                     ? "dot active"
                     : "dot inactive"
                 }
-              />  
+              />
             ))}
           </div>
 
